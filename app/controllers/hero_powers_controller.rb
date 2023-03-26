@@ -10,9 +10,15 @@ class HeroPowersController < ApplicationController
     end
 
     def create
-        hero_powers = HeroPower.create(heropower_params)
-        render json: hero_powers
-    end
+        hero_power = HeroPower.new(heropower_params)
+        if hero_power.save
+          hero = Hero.includes(:powers).find(hero_power.hero_id)
+          render json: hero.as_json(include: :powers)
+        else
+          render json: { errors: hero_power.errors.full_messages }, status: :unprocessable_entity
+        end
+      end
+      
 
     def update
         hero_powers = HeroPower.find(params[:id])

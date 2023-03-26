@@ -15,23 +15,25 @@ class PowersController < ApplicationController
     end
 
     def update
-        power = Power.find(params[:id])
-        if power.update(powers_params)
-            render json: power
+        power = Power.find_by(id: params[:id])
+        if power.nil?
+          render json: { error: "Power not found" }, status: :not_found
+        elsif power.update(powers_params)
+          render json: power
         else
-            render json: { error: power.errors.full_messages }, status: :unprocessable_entity
+          render json: { errors: power.errors.full_messages }, status: :unprocessable_entity
         end
-        
-    end
-
-    def delete
+      end
+      
+      def destroy
         power = Power.find(params[:id])
-        if power.destroy(powers_params)
-            render json: { message: "Power deleted successfully" }
+        if power.destroy
+          render json: { message: "Power deleted successfully" }
         else
-            render json: { error: "Failed to delete power" }, status: :unprocessable_entity
+          render json: { error: "Failed to delete power" }, status: :unprocessable_entity
         end
-    end
+      end
+      
     
 
     private
